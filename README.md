@@ -1,2 +1,3 @@
-# documentation
-Documentation for CakeML
+# Documentation for CakeML
+
+This is currently a preliminary work in progress.
