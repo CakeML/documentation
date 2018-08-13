@@ -292,6 +292,7 @@ The type name must begin with a lower case letter, and the constructors with upp
 datatype colour = Red | Green | Blue
 \end{smlcode}
 
+\todo{Update for new constructors w/o of}
 The constructors can contain values of given types specified with
 \smlinline{of}. Those values can be of the same type as the datatype
 itself; that is, the types constructed by \smlinline{datatype} can be recursive.
@@ -420,7 +421,7 @@ If no pattern in a \smlinline{case} expression matches the value, then a \smlinl
 
 Types are inferred in CakeML, so programs do not need to specify the types of
 variable declarations or functions. However, we can optionally annotate any
-pattern or expression with its type using a colon \smlinline{:}. That type is then enforced by the compiler.
+pattern or expression with its type using a colon \smlinline{:}. That type is then enforced by the compiler. Type annotations must not contain type variables (e.g., \smlinline{'a}).
 \begin{smlcode}
 val (x : int) = 1
 fun f (x : bool) = if x then 0 else 1
@@ -596,7 +597,9 @@ end
 \end{smlcode}
 The declarations occur between the \smlinline{let} and \smlinline{in}.
 The expression between \smlinline{in} and \smlinline{end} becomes the value
-for the whole \smlinline{let} expression.
+for the whole \smlinline{let} expression. Only variables and functions can be
+declared in a \smlinline{let} expression, not algebraic datatypes, exceptions,
+or modules.
 
 \section{Modules}
 \label{sect:modules}
@@ -607,7 +610,8 @@ for the whole \smlinline{let} expression.
 \subsection{Unsupported features}
 Here we only list missing features of the language, and not the basis library.
 
-The CakeML module system is heavily restricted compared to SML's. Structures cannot be nested, and functors are not supported. Structures cannot be given alternate names, or opened. Signatures cannot be named, and must appear directly on the structure that they seal. Only opaque sealing is supported (\smlinline{:>}, but not \smlinline{:}). Signatures cannot contain \smlinline{include}, \smlinline{sharing}, \smlinline{structure}, \smlinline{eqtype} or datatype replication specifications.
+\todo{Update once signatures are improved}.
+The CakeML module system is heavily restricted compared to SML's. Functors are not supported. Structures cannot be given alternate names, or opened. Signatures cannot be named, and must appear directly on the structure that they seal. Only opaque sealing is supported (\smlinline{:>}, but not \smlinline{:}). Signatures cannot contain \smlinline{include}, \smlinline{sharing}, \smlinline{structure}, \smlinline{eqtype} or datatype replication specifications.
 
 In contrast, CakeML's core language is more fully featured, with only the following omissions. The \smlinline{local}, \smlinline{abstype}, and datatype replication declarations are not supported. Neither are records, type annotations that contain type variables, and \smlinline{while} loops. Furthermore, \smlinline{let} expressions are restricted to \smlinline{val} and \smlinline{fun} declarations; they cannot contain type or exception declarations. The pattern language does not support the \smlinline{as} form.
 
@@ -629,7 +633,7 @@ The types of bindings in \smlinline{let} expressions cannot be generalised. This
 
 The built-in CakeML functions prefer the curried style over SML's preferred tupled style. For example, we write \smlinline{Vector.sub v 12} to get the 12$^\textrm{th}$ element of vector v, rather than \smlinline{Vector.sub (v,12)}. The infix operators are also curried when used with \smlinline{op}.
 
-CakeML guarantees right to left evaluation order for function calls.
+CakeML guarantees right to left evaluation order for the arguments to a function.
 
 \section{Differences from OCaml}
 
