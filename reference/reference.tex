@@ -404,6 +404,7 @@ fun nary_mem k tree =
     nary_mem k tree1 orelse nary_mem k (Node (k1, v, trees))
 \end{smlcode}
 
+\todo{Did this get extended?}
 \paragraph{Other places patterns can appear} Besides \smlinline{case}
 expressions and \smlinline{handle} expressions (\S\ref{sect:exceptions}),
 patterns can also be used in variable declarations (\smlinline{val}), and as
@@ -533,6 +534,24 @@ fun inc r =
   (r := !r + 1; !r)
 \end{smlcode}
 
+
+\section{Local bindings}
+
+A \smlinline{let} expression lets us declare variables in a local scope.
+\begin{smlcode}
+let
+  val x = 1
+  fun f y = x + y
+in
+  f 10 + x
+end
+\end{smlcode}
+The declarations occur between the \smlinline{let} and \smlinline{in}.
+The expression between \smlinline{in} and \smlinline{end} becomes the value
+for the whole \smlinline{let} expression. Only variables and functions can be
+declared in a \smlinline{let} expression, not algebraic datatypes, exceptions,
+or modules.
+
 \section{Exceptions}
 \label{sect:exceptions}
 
@@ -543,19 +562,29 @@ start with a capital letter, and can have arguments similar to the constructor
 of an algebraic data type.
 \begin{smlcode}
 exception Error
-exception Type_error of int * string
+exception BadInput of string
 \end{smlcode}
+
 
 \paragraph{Raising exceptions}
-A \smlinline{raise} expression raises its argument as an exception. For example,
+A \smlinline{raise} expression raises its argument as an exception. For example,\footnote{This example uses options (\S\ref{sect:option}) and TextIO (\S\ref{sect:textio}).}
 \begin{smlcode}
-if x < 0 then raise Error
-else x
+fun checkPositive x =
+  if x <= 0 then raise Error
+  else x
 \end{smlcode}
 
 \begin{smlcode}
-if t1 = t2 then t1
-else raise (Type_error (loc, "type mismatch"))
+fun readInt () =
+  let val s =
+    case TextIO.inputLine TextIO.stdIn of
+      None => raise Error
+    | Some s => s
+  in
+    case Int.fromString s of
+      None => raise (BadInput s)
+    | Some i => i
+  end
 \end{smlcode}
 
 A \smlinline{raise} expression can have any type, and so can be used anywhere
@@ -576,30 +605,14 @@ message for any other exception.
 \begin{smlcode}
 val m =
   1 div 0 handle Div => 0
+
 val x =
-  type_check p
+  readInt ()
   handle
-    Type_error (i, s) => print (Int.toString i ^ " " ^ s)
-  | _ => print "unknown exception"
-\end{smlcode}
-\todo{Update print function call}
+    BadInput s => (print (s ^ " is not an int. Defaulting to 0"); 0)
+  | Error => (print "No input. Defaulting to 0."; 0)
 
-\section{Local bindings}
-
-A \smlinline{let} expression lets us declare variables in a local scope.
-\begin{smlcode}
-let
-  val x = 1
-  fun f y = x + y
-in
-  f 10 + x
-end
 \end{smlcode}
-The declarations occur between the \smlinline{let} and \smlinline{in}.
-The expression between \smlinline{in} and \smlinline{end} becomes the value
-for the whole \smlinline{let} expression. Only variables and functions can be
-declared in a \smlinline{let} expression, not algebraic datatypes, exceptions,
-or modules.
 
 \section{Modules}
 \label{sect:modules}
@@ -672,10 +685,17 @@ The following are the supported operations on arrays. If an index is out of boun
 \section{List}
 \label{sect:list}
 
-\section{Option} An optional value is either \texttt{NONE}, indicating that no value is present, or \texttt{SOME}\ $v$ for a value $v$. They type of an optional value that might contain a value of type $\tau$ is $\tau$\ \texttt{option}. There are no operations for de-structuring options.
+\section{Option}
+\label{sect:option}
+
+An optional value is either \texttt{None}, indicating that no value is present, or \texttt{Some}\ $v$ for a value $v$. They type of an optional value that might contain a value of type $\tau$ is $\tau$\ \texttt{option}. There are no operations for de-structuring options.
 
 \section{String}
 \label{sect:string}
+
+\section{TextIO}
+\label{sect:textio}
+
 
 \section{Vector}
 \label{sect:vector}
